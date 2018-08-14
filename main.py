@@ -1,25 +1,29 @@
 # coding=utf-8
 
-import requests as re
-import time
-import logging
 import json
+import logging
+import time
 
-from config import *
+import requests as re
+
+from config import Config
 
 
 def parser(s):
     return json.loads(s[9:-3])
 
 
+config = Config()
+
+
 def fetch_source():
     try:
-        req = re.get(REQUEST_URL)
+        req = re.get(config.request_url)
         json_data = parser(req.text)
     except Exception as e:
-        logging.info('a error occurred while fetching')
+        logging.error('a error occurred while fetching')
         return None
-    logging.info('fetch success')
+    logging.debug('fetch success')
     return json_data
 
 
@@ -33,7 +37,7 @@ def send_mail(data):
     def _format_addr(s):
         name, addr = parseaddr(s)
         return formataddr((Header(name, 'utf-8').encode(), addr))
-    
+
     template = """
     <p>您订阅的节目已经更新。<br>
     标题：{}<br>
@@ -49,28 +53,28 @@ def send_mail(data):
         data['moviePath']['pc']
     )
 
-    
-
-    server = smtplib.SMTP(smtp_server, smtp_port)
+    server = smtplib.SMTP(config.smtp_server, config.smtp_port)
     server.set_debuglevel(1)
-    server.ehlo() # Hostname to send for this command defaults to the fully qualified domain name of the local host.
-    server.starttls() #Puts connection to SMTP server in TLS mode
+    # Hostname to send for this command defaults to the fully qualified domain name of the local host.
     server.ehlo()
-    server.login(from_addr, password)
-    for to_addr in to_addrs:
+    server.starttls()  # Puts connection to SMTP server in TLS mode
+    server.ehlo()
+    server.login(config.from_addr, config.password)
+    for to_addr in config.to_addrs:
         msg = MIMEText(template, 'html', 'utf-8')
-        msg['From'] = _format_addr(from_addr)
+        msg['From'] = _format_addr(config.from_addr)
         msg['To'] = _format_addr(to_addr)
-        if DEBUG:
-            msg['Subject'] = Header('【测试】 {} 更新告知'.format(data['title']), 'utf-8').encode()
+        if config.debug:
+            msg['Subject'] = Header('【测试】 {} 更新告知'.format(
+                data['title']), 'utf-8').encode()
         else:
-            msg['Subject'] = Header('{} 更新告知'.format(data['title']), 'utf-8').encode()
-        server.sendmail(from_addr, to_addr, msg.as_string())
+            msg['Subject'] = Header('{} 更新告知'.format(
+                data['title']), 'utf-8').encode()
+        server.sendmail(config.from_addr, to_addr, msg.as_string())
     server.quit()
 
 
 def listen():
-    REQUEST_URL = REQUEST_PREFIX + PROGRAM_NAME
     logging.info('start listening...')
     first_fetch = True
     while True:
@@ -84,7 +88,7 @@ def listen():
             count = int(json_data['count'])
             first_fetch = False
         else:
-            if DEBUG:
+            if config.debug:
                 count = -1
             if count < int(json_data['count']):
                 count = int(json_data['count'])
@@ -96,14 +100,13 @@ def listen():
                 logging.info('count:{}'.format(json_data['count']))
                 logging.info('seems nothing update')
         logging.info('wait for the next fetch')
-        time.sleep(SLEEP_TIME)
+        time.sleep(config.sleep_time)
 
 
 if __name__ == '__main__':
     FORMAT = '%(asctime)-15s %(message)s'
-    logging.basicConfig(format=FORMAT, level=logging.DEBUG)
+    logging.basicConfig(format=FORMAT, level=logging.INFO)
     try:
         listen()
     except KeyError:
         logging.info('seems api have changed..')
-
