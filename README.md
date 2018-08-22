@@ -1,9 +1,33 @@
-# Onsen update checker
+# onsen-api
 
-This is a python script which can automatic check update from onsen.ag.
+A python library for [Onsen(音泉)](http://onsen.ag) API.
 
-## Usage
+## Feature
+- Get current available program list
+- Get information of program
+- Download a program
 
-1. Copy `config_sample.py` to `config.py`.
-2. Just run `python main.py`.
-3. You also run it background in linux system, run `sh start.sh` to start process and `sh stop.sh` to stop. 
+## installation
+
+```
+pip install pipenv
+pipenv install
+```
+
+## Sample
+```python
+from onsen_api.client import OnsenClient
+
+# create a client
+c = OnsenClient()
+
+# get current available program list
+l = c.shown_moives()
+print(l[0])
+
+# download a program
+m = c.moive_info('wa2')
+print(m.download_url)
+print('start download')
+m.download('wa2.mp3')
+```
