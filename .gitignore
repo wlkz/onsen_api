@@ -103,8 +103,11 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+#vscode file
+.vscode
+
 # config file
-config.py
+/config.py
 
 # some log file
 pid.out
