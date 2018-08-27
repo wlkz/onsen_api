@@ -62,10 +62,10 @@ class MoiveInfo(Base):
     def _get_data(self):
         import json
         res = self._session.request(self._method, self._url)
-        if res.status_code == 404:
-            raise ProgramNotFoundException(self._id)
         try:
             self._data = self._parser(res.text)
+            if self._data.get('error') is not None:
+                raise ProgramNotFoundException(self._id)
         except json.JSONDecodeError as e:
             raise UnexpectedResponseException(
                 self._url, e.msg, 'a json dict')
