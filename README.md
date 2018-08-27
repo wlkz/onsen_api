@@ -1,4 +1,4 @@
-# onsen-api
+# onsen_api
 
 A python library for [Onsen(音泉)](http://onsen.ag) API.
 
@@ -7,7 +7,7 @@ A python library for [Onsen(音泉)](http://onsen.ag) API.
 - Get information of program
 - Download a program
 
-## installation
+## Installation
 
 ```
 pip install pipenv
@@ -16,7 +16,7 @@ pipenv install
 
 ## Sample
 ```python
-from onsen_api.client import OnsenClient
+from onsen_api import OnsenClient
 
 # create a client
 c = OnsenClient()
