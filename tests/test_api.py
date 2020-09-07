@@ -7,17 +7,16 @@ class TestApi(unittest.TestCase):
     def setUp(self):
         self.c = OnsenClient()
 
-    def test_shown_moives(self):
-        moives = self.c.shown_moives()
-        self.assertIsNotNone(len(moives.data))
-        i = moives[0]
-        self.assertIsNotNone(i.data)
+    def test_program_list(self):
+        program_list = self.c.program_list()
+        kokuradio = program_list['kokuradio']
+        kokuradio['topics']
+
     
-    def test_moive_info(self):
-        info = self.c.moive_info('wa2')
-        self.assertIsNotNone(info.download_url)
-        
-        info = self.c.moive_info('wa3')
+    def test_program(self):
         with self.assertRaises(ProgramNotFoundException):
-            self.assertIsNotNone(info.download_url)
+            wa2 = self.c.get_program('wa2')
+        
+        kokuradio = self.c.get_program('kokuradio')
+        kokuradio.download_latest()
             

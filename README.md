@@ -1,6 +1,6 @@
 # onsen_api
 
-*Note: This script is outdated since the huge update of onsen.ag. Every things was changed. New version of onsen_api is WIP.*
+*Note: This script is updated for the current version of onsen.ag. Enjoy~*
 
 A python library for [Onsen(音泉)](http://onsen.ag) API.
 
@@ -26,12 +26,12 @@ from onsen_api import OnsenClient
 c = OnsenClient()
 
 # get current available program list
-l = c.shown_moives()
-print(l[0])
+l = c.program_list()
+print(l['kokuradio'])
 
 # download a program
-m = c.moive_info('wa2')
+m = c.get_program('kokuradio')
 print(m.download_url)
 print('start download')
-m.download('wa2.mp3')
+m.download_latest()
 ```
